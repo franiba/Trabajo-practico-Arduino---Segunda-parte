@@ -1,0 +1,107 @@
+//Codigo desde processing
+
+import processing.serial.*;
+Serial myPort;
+
+int rectX = 100;
+int rectY = 150;
+int rectAncho = 200;
+int rectAlto = 100;
+
+
+
+void setup(){
+
+size(640, 360);
+  frameRate(60);  
+  rectX = width/8;
+  rectY = height/8;
+  background(50,100,200);
+println(Serial.list());
+myPort = new Serial(this, "COM5", 9600);  //Iniciamos la comunicación serial desde el puerto COM5
+
+}
+
+void draw(){
+int op=-1;
+  background(50,100,200);
+  botones();
+
+  if (myPort.available() > 0) {
+    // Lee el número enviado (puede ser más de un dígito)
+    op = myPort.read();   
+    //Segun lo que obtengamos en myport.read seleccionamos las diferentes opciones
+    switch(op){
+     case 0:
+     fill(0,251,0);
+     rect(rectX+(1*120),rectY, 100,40);
+     break;
+     case 1:
+     fill(0,251,0);
+     rect(rectX+(2*120),rectY, 100,40);
+     break;
+     }
+   }
+}
+
+
+
+void botones(){    //Funcion que dibuja las graficas
+  int i;
+  int centrox;
+  int centroy;
+
+  fill(251,251,251);
+  rect(rectX,rectY, 100,40);
+  fill(0,0,0);
+  textSize(20);
+  text("ENTRADAS",rectX+10,rectY+25);
+
+  for(i=2;i<=3;i++){
+  fill(251,251,251);
+  rect(rectX+(i*120),rectY, 100,40);
+  fill(0,0,0);
+  textSize(20);
+  text("E"+(i-1),(rectX+(i*120))+40,rectY+25);
+  }
+  
+  fill(251,251,251);
+  rect(rectX,rectY*4, 100,40);
+  fill(0,0,0);
+  textSize(20);
+  text("SALIDAS",rectX+10,(rectY*4)+25);
+  centrox=(rectX+150) /2;
+  centroy=(rectY+50)/2;
+
+  for(i=2;i<=3;i++){
+    fill(251,251,251);
+    ellipse(centrox+(i*120),centroy*4, 70,70);
+   fill(0,0,0);
+   textSize(20);
+   text("L"+(i-1),(rectX+(i*120))+20,rectY*4+20);
+  }
+}
+
+
+void mousePressed() {    //Funcion que determina ciertos acciones segun donde hagamos clic
+
+  float centrox1 = (rectX + 150) / 2 + (2 * 120);
+  float centroy1 = ((rectY + 50) / 2) * 4;
+  float radio = 35;
+  float d1 = dist(mouseX, mouseY, centrox1, centroy1);
+  float centrox2 = (rectX + 150) / 2 + (3 * 120);
+  float centroy2 = ((rectY + 50) / 2) * 4;
+  float d2 = dist(mouseX, mouseY, centrox2, centroy2);
+  
+  if (d1 < radio) {
+    println("Clic en L1");
+    myPort.write(0);
+  }
+
+  if (d2 < radio) {
+    println("Clic en L2");
+    myPort.write(1);
+  }  
+  
+  
+}
